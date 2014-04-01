@@ -27,33 +27,49 @@ public class MazeGraph {
         // Start at first location
         start = nodeRetriever.getLocation("start");
         Location currentLocation = start;
-        Location lastLocation = currentLocation;
         visitedLocations.add(currentLocation.getId());
         unvisitedLocations.addAll(currentLocation.getExits());
 
         while(unvisitedLocations.size() > 0) {
             // Chose the exit and remove from unvisited locations
-            String exitId = chooseExit(currentLocation);
+            Location chosenLocation = chooseLocation(currentLocation);
 
-            if(exitId != null) {
-                // Retrieve the the node representing the chosen exit
-                Location chosenLocation = nodeRetriever.getLocation(exitId);
-
+            if(chosenLocation != null) {
+                currentLocation = chosenLocation;
                 // Mark as visited, remove from the unvisited location list and
                 // add its unvisited exits to the the unvisited list
-                visitedLocations.add(chosenLocation.getId());
-                unvisitedLocations.remove(chosenLocation.getId());
-                addUnvisitedLocations(chosenLocation.getExits());
-
-                // Set the chosen location first referrer
-                chosenLocation.setFirstReferrer(currentLocation);
-                currentLocation = chosenLocation;
-
-                // connect the locations in the graph
-                connectLocations(currentLocation, lastLocation);
-                lastLocation = currentLocation;
+                visitedLocations.add(currentLocation.getId());
+                unvisitedLocations.remove(currentLocation.getId());
+                addUnvisitedLocations(currentLocation.getExits());
             }
         }
+    }
+
+    private Location chooseLocation(Location currentLocation) throws IOException, SAXException {
+        for(String exit: currentLocation.getExits()) {
+            if(unvisitedLocations.contains(exit)) {
+                Location chosenLocation = nodeRetriever.getLocation(exit);
+                chosenLocation.setFirstReferrer(currentLocation);
+                connectLocations(chosenLocation, currentLocation);
+                return chosenLocation;
+            }
+        }
+        // if we get here then all exits have been visited
+        // so we need to backtrack
+        Location previousLocation = currentLocation.getFirstReferrer();
+        while(!previousLocation.hasUnvisitedExits()) {
+            previousLocation = previousLocation.getFirstReferrer();
+        }
+
+        for(String exit : previousLocation.getExits()) {
+            if(unvisitedLocations.contains(exit)) {
+                Location chosenLocation = nodeRetriever.getLocation(exit);
+                chosenLocation.setFirstReferrer(currentLocation);
+                connectLocations(chosenLocation, previousLocation);
+                return chosenLocation;
+            }
+        }
+        return null;
     }
 
     private void addUnvisitedLocations(List<String> exits) {
@@ -67,30 +83,6 @@ public class MazeGraph {
     private void connectLocations(Location currentLocation, Location lastLocation) {
         lastLocation.setConnection(currentLocation);
         currentLocation.setConnection(lastLocation);
-    }
-
-    private String chooseExit(Location currentLocation) {
-
-        for(String locationId: currentLocation.getExits()) {
-            if(unvisitedLocations.contains(locationId)) {
-                return locationId;
-            }
-        }
-
-        // if we get here then all exits have been visited
-        // so we need to backtrack
-        Location previousLocation = currentLocation.getFirstReferrer();
-        while(!previousLocation.hasUnvisitedExits()) {
-            previousLocation = previousLocation.getFirstReferrer();
-        }
-
-        for(String locationId: previousLocation.getExits()) {
-            if(unvisitedLocations.contains(locationId)) {
-                return locationId;
-            }
-        }
-
-        return null;
     }
 
 

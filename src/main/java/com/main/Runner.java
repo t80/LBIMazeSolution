@@ -14,8 +14,8 @@ public class Runner {
         // build graph
         MazeGraph mazeGraph = new MazeGraph();
         mazeGraph.buildGraph();
-        // trim graph
 
+        // trim graph
         // add exit distances to nodes
 
     }
