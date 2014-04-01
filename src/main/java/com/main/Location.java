@@ -54,7 +54,7 @@ public class Location {
     }
 
     public boolean hasUnvisitedExits() {
-        for(String exit: exits) {
+        for(String exit: getExits()) {
             if(!connections.containsKey(exit)) {
                 return true;
             }
