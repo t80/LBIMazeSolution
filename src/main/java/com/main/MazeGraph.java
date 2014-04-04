@@ -11,13 +11,10 @@ import java.util.Queue;
 
 public class MazeGraph {
 
+    private static final String START = "start";
     private List<String> unvisitedLocations = new ArrayList<>();
     private List<String> visitedLocations = new ArrayList<>();
-    private Queue<Location> route = new ArrayDeque<>();
-    private List<String> exitOptions;
     private NodeRetriever nodeRetriever;
-    private Location start;
-    private Location exit;
 
     public MazeGraph() throws ParserConfigurationException {
         nodeRetriever = new NodeRetriever();
@@ -25,8 +22,7 @@ public class MazeGraph {
 
     public void buildGraph() throws IOException, SAXException {
         // Start at first location
-        start = nodeRetriever.getLocation("start");
-        Location currentLocation = start;
+        Location currentLocation = nodeRetriever.getLocation(START);
         visitedLocations.add(currentLocation.getId());
         unvisitedLocations.addAll(currentLocation.getExits());
 
@@ -84,19 +80,4 @@ public class MazeGraph {
         lastLocation.setConnection(currentLocation);
         currentLocation.setConnection(lastLocation);
     }
-
-
-
-
-    private String getFirstUnvisitedExit(Location location) {
-        for(String locationId: location.getExits()) {
-            if(unvisitedLocations.contains(locationId)) {
-                return locationId;
-            }
-        }
-
-        return null;
-    }
-
-
 }
