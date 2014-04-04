@@ -15,6 +15,8 @@ public class MazeGraph {
     private List<String> unvisitedLocations = new ArrayList<>();
     private List<String> visitedLocations = new ArrayList<>();
     private NodeRetriever nodeRetriever;
+    private List<String> powerPillLocations = new ArrayList<>();
+    private Location startLocation;
 
     public MazeGraph() throws ParserConfigurationException {
         nodeRetriever = new NodeRetriever();
@@ -23,6 +25,7 @@ public class MazeGraph {
     public void buildGraph() throws IOException, SAXException {
         // Start at first location
         Location currentLocation = nodeRetriever.getLocation(START);
+        startLocation = currentLocation;
         visitedLocations.add(currentLocation.getId());
         unvisitedLocations.addAll(currentLocation.getExits());
 
@@ -31,6 +34,9 @@ public class MazeGraph {
             Location chosenLocation = chooseLocation(currentLocation);
 
             if(chosenLocation != null) {
+                if(chosenLocation.getLocationType() == Location.LocationType.PowerPill) {
+                    powerPillLocations.add(chosenLocation.getId());
+                }
                 currentLocation = chosenLocation;
                 // Mark as visited, remove from the unvisited location list and
                 // add its unvisited exits to the the unvisited list
@@ -79,5 +85,13 @@ public class MazeGraph {
     private void connectLocations(Location currentLocation, Location lastLocation) {
         lastLocation.setConnection(currentLocation);
         currentLocation.setConnection(lastLocation);
+    }
+
+    public List getPowerPillLocations() {
+        return powerPillLocations;
+    }
+
+    public Location getStartLocation() {
+        return startLocation;
     }
 }

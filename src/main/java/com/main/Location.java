@@ -23,6 +23,7 @@ public class Location {
 
     private Map<String, Location> connections = new HashMap<>();
     private Location firstReferrer = null;
+    private int distanceFromExit;
 
     public Location() {
     }
