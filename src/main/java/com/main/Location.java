@@ -14,6 +14,18 @@ import static jersey.repackaged.com.google.common.collect.Lists.newArrayList;
 @XmlRootElement(name = "Location")
 public class Location {
 
+    public Map<String, Location> getConnections() {
+        return connections;
+    }
+
+    public void setDistanceFromExit(int distanceFromExit) {
+        this.distanceFromExit = distanceFromExit;
+    }
+
+    public int getDistanceFromExit() {
+        return distanceFromExit;
+    }
+
     static enum LocationType { Start, Normal, Exit, PowerPill;}
 
     @XmlElementWrapper(name = "Exits")

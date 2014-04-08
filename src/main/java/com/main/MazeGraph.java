@@ -4,10 +4,8 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 
 public class MazeGraph {
 
@@ -17,6 +15,7 @@ public class MazeGraph {
     private NodeRetriever nodeRetriever;
     private List<String> powerPillLocations = new ArrayList<>();
     private Location startLocation;
+    private Location exit;
 
     public MazeGraph() throws ParserConfigurationException {
         nodeRetriever = new NodeRetriever();
@@ -36,7 +35,10 @@ public class MazeGraph {
             if(chosenLocation != null) {
                 if(chosenLocation.getLocationType() == Location.LocationType.PowerPill) {
                     powerPillLocations.add(chosenLocation.getId());
+                } else if(chosenLocation.getLocationType() == Location.LocationType.Exit) {
+                    exit = chosenLocation;
                 }
+
                 currentLocation = chosenLocation;
                 // Mark as visited, remove from the unvisited location list and
                 // add its unvisited exits to the the unvisited list
@@ -93,5 +95,9 @@ public class MazeGraph {
 
     public Location getStartLocation() {
         return startLocation;
+    }
+
+    public Location getExit() {
+        return exit;
     }
 }
